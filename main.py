@@ -1,99 +1,99 @@
-import os
-import json
+# import os
+# import json
 # import torch
 # import torch.nn as nn
 
-from transformers import BertModel, BertTokenizer
+# from transformers import BertModel, BertTokenizer
 # from torch.utils.data import Dataset, DataLoader
 
 
-class DataPreprocessor:
-    def __init__(self, file_path):
-        self.file_path = file_path
-        self.raw_data = self.load_jsonl()
-        self.preprocessed_data = self.preprocess_data()
-
-    def load_jsonl(self):
-        data = []
-
-        with open(self.file_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                data.append(json.loads(line))
-
-        return data
-
-    def preprocess_data(self):
-        preprocessed_data = []
-
-        for item in self.raw_data:
-            text = item['text']
-            entities = sorted(item['entities'], key=lambda x: x['start_offset'])
-
-            entity_labels = []
-            attribute_labels = []
-            type_labels = []
-
-            for entity in entities:
-                start_offset = entity['start_offset']
-                end_offset = entity['end_offset']
-                label = entity['label']
-
-                if label == 'ENTITY':
-                    entity_labels.append((start_offset, end_offset, 'ENTITY'))
-                elif label == 'ATTRIBUTE':
-                    attribute_labels.append((start_offset, end_offset, 'ATTRIBUTE'))
-                elif label in ['VARCHAR', 'INT', 'DATE']:
-                    type_labels.append((start_offset, end_offset, label))
-
-            preprocessed_data.append({
-                'text': text,
-                'entities': entity_labels,
-                'attributes': attribute_labels,
-                'types': type_labels
-            })
-
-        return preprocessed_data
-
-
-def prepare_data_for_entity_extraction(preprocessed_data):
-    tokenizer = BertTokenizer.from_pretrained("DeepPavlov/rubert-base-cased")
-
-    prepared_data = []
-
-    for item in preprocessed_data:
-        tokens = tokenizer.tokenize(item['text'])
-        token_spans = tokenizer.get_offset_mapping(item['text'])
-
-        entity_labels = ['O'] * len(tokens)
-        attribute_labels = ['O'] * len(tokens)
-        type_labels = ['O'] * len(tokens)
-
-        for start, end, label in item['entities'] + item['attributes'] + item['types']:
-            for i, (token_start, token_end) in enumerate(token_spans):
-                if token_start >= start and token_end <= end:
-                    if label == 'ENTITY':
-                        entity_labels[i] = 'B-ENTITY' if entity_labels[i - 1] == 'O' else 'I-ENTITY'
-                    elif label == 'ATTRIBUTE':
-                        attribute_labels[i] = 'B-ATTRIBUTE' if attribute_labels[i - 1] == 'O' else 'I-ATTRIBUTE'
-                    else:
-                        type_labels[i] = f'B-{label}' if type_labels[i - 1] == 'O' else f'I-{label}'
-
-        prepared_data.append({
-            'tokens': tokens,
-            'entity_labels': entity_labels,
-            'attribute_labels': attribute_labels,
-            'type_labels': type_labels
-        })
-
-    return prepared_data
-
-
-path_to_data = os.path.abspath("data/imirral.jsonl")
-
-preprocessor = DataPreprocessor(path_to_data)
-preprocessed_data = preprocessor.preprocessed_data
-entity_data = prepare_data_for_entity_extraction(preprocessed_data)
-print()
+# class DataPreprocessor:
+#     def __init__(self, file_path):
+#         self.file_path = file_path
+#         self.raw_data = self.load_jsonl()
+#         self.preprocessed_data = self.preprocess_data()
+#
+#     def load_jsonl(self):
+#         data = []
+#
+#         with open(self.file_path, 'r', encoding='utf-8') as f:
+#             for line in f:
+#                 data.append(json.loads(line))
+#
+#         return data
+#
+#     def preprocess_data(self):
+#         preprocessed_data = []
+#
+#         for item in self.raw_data:
+#             text = item['text']
+#             entities = sorted(item['entities'], key=lambda x: x['start_offset'])
+#
+#             entity_labels = []
+#             attribute_labels = []
+#             type_labels = []
+#
+#             for entity in entities:
+#                 start_offset = entity['start_offset']
+#                 end_offset = entity['end_offset']
+#                 label = entity['label']
+#
+#                 if label == 'ENTITY':
+#                     entity_labels.append((start_offset, end_offset, 'ENTITY'))
+#                 elif label == 'ATTRIBUTE':
+#                     attribute_labels.append((start_offset, end_offset, 'ATTRIBUTE'))
+#                 elif label in ['VARCHAR', 'INT', 'DATE']:
+#                     type_labels.append((start_offset, end_offset, label))
+#
+#             preprocessed_data.append({
+#                 'text': text,
+#                 'entities': entity_labels,
+#                 'attributes': attribute_labels,
+#                 'types': type_labels
+#             })
+#
+#         return preprocessed_data
+#
+#
+# def prepare_data_for_entity_extraction(preprocessed_data):
+#     tokenizer = BertTokenizer.from_pretrained("DeepPavlov/rubert-base-cased")
+#
+#     prepared_data = []
+#
+#     for item in preprocessed_data:
+#         tokens = tokenizer.tokenize(item['text'])
+#         token_spans = tokenizer.get_offset_mapping(item['text'])
+#
+#         entity_labels = ['O'] * len(tokens)
+#         attribute_labels = ['O'] * len(tokens)
+#         type_labels = ['O'] * len(tokens)
+#
+#         for start, end, label in item['entities'] + item['attributes'] + item['types']:
+#             for i, (token_start, token_end) in enumerate(token_spans):
+#                 if token_start >= start and token_end <= end:
+#                     if label == 'ENTITY':
+#                         entity_labels[i] = 'B-ENTITY' if entity_labels[i - 1] == 'O' else 'I-ENTITY'
+#                     elif label == 'ATTRIBUTE':
+#                         attribute_labels[i] = 'B-ATTRIBUTE' if attribute_labels[i - 1] == 'O' else 'I-ATTRIBUTE'
+#                     else:
+#                         type_labels[i] = f'B-{label}' if type_labels[i - 1] == 'O' else f'I-{label}'
+#
+#         prepared_data.append({
+#             'tokens': tokens,
+#             'entity_labels': entity_labels,
+#             'attribute_labels': attribute_labels,
+#             'type_labels': type_labels
+#         })
+#
+#     return prepared_data
+#
+#
+# path_to_data = os.path.abspath("data/imirral.jsonl")
+#
+# preprocessor = DataPreprocessor(path_to_data)
+# preprocessed_data = preprocessor.preprocessed_data
+# entity_data = prepare_data_for_entity_extraction(preprocessed_data)
+# print()
 
 
 # class EntityDataset(Dataset):

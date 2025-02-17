@@ -25,11 +25,19 @@ def prepare_data_for_entity_extraction(preprocessed_data):
             for char_pos in range(token.start, token.stop):
                 char_to_word[char_pos] = idx
 
-        for start, end, label in item['entities'] + item['attributes'] + item['types']:
+        for entity in item['entities'] + item['attributes'] + item['types']:
+            entity_id, start, end, label = entity
+
             for char_pos in range(start, end):
                 word_idx = char_to_word.get(char_pos)
                 if word_idx is not None:
-                    prefix = 'B' if word_labels[word_idx] == 'O' else 'I'
+                    current_label = word_labels[word_idx]
+                    if current_label == 'O':
+                        prefix = 'B'
+                    elif current_label[2:] != label:
+                        prefix = 'B'
+                    else:
+                        prefix = 'I'
                     word_labels[word_idx] = f'{prefix}-{label}'
 
         prepared_data.append({
@@ -238,7 +246,7 @@ if __name__ == '__main__':
     entity_data = prepare_data_for_entity_extraction(preprocessed_data)
 
     # Разделение данных на тренировочный и валидационный наборы
-    train_data, val_data = train_test_split(entity_data, test_size=0.1, random_state=42)
+    train_data, val_data = train_test_split(entity_data, test_size=0.2, random_state=42)
 
     # Подготовка данных для обучения
     tokenizer = BertTokenizerFast.from_pretrained("DeepPavlov/rubert-base-cased")
@@ -255,11 +263,11 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     label_map = train_dataset.label_map
     model = EntityExtractionModel(num_labels=len(label_map))
-    train_entity_extraction_model(model, train_dataloader, val_dataloader, num_epochs=30, device=device,
+    train_entity_extraction_model(model, train_dataloader, val_dataloader, num_epochs=20, device=device,
                                   label_map=label_map)
 
     # Сохранение модели и токенизатора
-    output_dir = 'D:/Magistracy/FQW/DDLRequestGenerator/saved_models/entity_extraction_model'
+    output_dir = 'D:/Magistracy/FQW/DDLRequestGenerator/saved_models/entity_model_without_dt'
     save_model_and_tokenizer(model, tokenizer, output_dir, label_map)
 
     # Пример использования модели для предсказания
@@ -270,6 +278,12 @@ if __name__ == '__main__':
                  "(технологи, инженеры по качеству, механики и пр.) и производственным персоналом (операторы, "
                  "наладчики, упаковщики и пр.).")
     loaded_model, loaded_tokenizer, loaded_label_map = load_model_and_tokenizer(output_dir, num_labels=len(label_map))
-    predicted_entities = predict(test_text, loaded_model, loaded_tokenizer, loaded_label_map, device)
+
+    predicted_entities = predict(test_text,
+                                 loaded_model,
+                                 loaded_tokenizer,
+                                 loaded_label_map,
+                                 device)
+
     print("Predicted Entities:")
     print(predicted_entities)
