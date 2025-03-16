@@ -1,0 +1,319 @@
+Epoch 1/20, Training Loss: 1.5016
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.0000    0.0000    0.0000        31
+     DECIMAL     0.0000    0.0000    0.0000        28
+      ENTITY     0.0000    0.0000    0.0000       271
+         INT     0.0000    0.0000    0.0000        33
+     VARCHAR     0.0000    0.0000    0.0000       176
+
+   micro avg     0.0000    0.0000    0.0000       542
+   macro avg     0.0000    0.0000    0.0000       542
+weighted avg     0.0000    0.0000    0.0000       542
+
+Epoch 2/20, Training Loss: 0.8730
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.0000    0.0000    0.0000        31
+     DECIMAL     0.0000    0.0000    0.0000        28
+      ENTITY     0.0000    0.0000    0.0000       271
+         INT     0.0000    0.0000    0.0000        33
+     VARCHAR     0.3780    0.3523    0.3647       176
+
+   micro avg     0.3690    0.1144    0.1746       542
+   macro avg     0.0540    0.0503    0.0521       542
+weighted avg     0.1228    0.1144    0.1184       542
+
+Epoch 3/20, Training Loss: 0.6377
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.0000    0.0000    0.0000        31
+     DECIMAL     0.0000    0.0000    0.0000        28
+      ENTITY     0.3410    0.4354    0.3825       271
+         INT     0.0000    0.0000    0.0000        33
+     VARCHAR     0.3746    0.7216    0.4932       176
+
+   micro avg     0.3577    0.4520    0.3993       542
+   macro avg     0.1022    0.1653    0.1251       542
+weighted avg     0.2922    0.4520    0.3514       542
+
+Epoch 4/20, Training Loss: 0.5129
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.0000    0.0000    0.0000        31
+     DECIMAL     0.0000    0.0000    0.0000        28
+      ENTITY     0.4035    0.6790    0.5062       271
+         INT     0.0000    0.0000    0.0000        33
+     VARCHAR     0.4286    0.6818    0.5263       176
+
+   micro avg     0.4125    0.5609    0.4754       542
+   macro avg     0.1189    0.1944    0.1475       542
+weighted avg     0.3409    0.5609    0.4240       542
+
+Epoch 5/20, Training Loss: 0.4235
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.2857    0.0645    0.1053        31
+     DECIMAL     0.0667    0.0357    0.0465        28
+      ENTITY     0.5286    0.5461    0.5372       271
+         INT     0.0000    0.0000    0.0000        33
+     VARCHAR     0.4699    0.7102    0.5656       176
+
+   micro avg     0.4851    0.5092    0.4968       542
+   macro avg     0.1930    0.1938    0.1792       542
+weighted avg     0.4367    0.5092    0.4607       542
+
+Epoch 6/20, Training Loss: 0.3689
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.6250    0.3226    0.4255        31
+     DECIMAL     0.2105    0.1429    0.1702        28
+      ENTITY     0.5982    0.4834    0.5347       271
+         INT     0.0213    0.0303    0.0250        33
+     VARCHAR     0.5565    0.7557    0.6410       176
+
+   micro avg     0.5167    0.5148    0.5157       542
+   macro avg     0.2874    0.2478    0.2566       542
+weighted avg     0.5277    0.5148    0.5101       542
+
+Epoch 7/20, Training Loss: 0.3124
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.5588    0.6129    0.5846        31
+     DECIMAL     0.4643    0.4643    0.4643        28
+      ENTITY     0.5607    0.6310    0.5938       271
+         INT     0.1000    0.0303    0.0465        33
+     VARCHAR     0.6010    0.6761    0.6364       176
+
+   micro avg     0.5617    0.5959    0.5783       542
+   macro avg     0.3264    0.3449    0.3322       542
+weighted avg     0.5375    0.5959    0.5638       542
+
+Epoch 8/20, Training Loss: 0.2769
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.6667    0.7097    0.6875        31
+     DECIMAL     0.2571    0.3214    0.2857        28
+      ENTITY     0.5279    0.6642    0.5882       271
+         INT     0.1304    0.0909    0.1071        33
+     VARCHAR     0.6207    0.7159    0.6649       176
+
+   micro avg     0.5354    0.6273    0.5777       542
+   macro avg     0.3147    0.3574    0.3334       542
+weighted avg     0.5248    0.6273    0.5706       542
+
+Epoch 9/20, Training Loss: 0.2248
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.6765    0.7419    0.7077        31
+     DECIMAL     0.3462    0.3214    0.3333        28
+      ENTITY     0.5556    0.6458    0.5973       271
+         INT     0.2143    0.0909    0.1277        33
+     VARCHAR     0.5782    0.6932    0.6305       176
+
+   micro avg     0.5533    0.6125    0.5814       542
+   macro avg     0.3387    0.3562    0.3423       542
+weighted avg     0.5352    0.6125    0.5688       542
+
+Epoch 10/20, Training Loss: 0.1956
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.6970    0.7419    0.7188        31
+     DECIMAL     0.3846    0.5357    0.4478        28
+      ENTITY     0.5978    0.5978    0.5978       271
+         INT     0.3333    0.2424    0.2807        33
+     VARCHAR     0.6142    0.6875    0.6488       176
+
+   micro avg     0.5833    0.6070    0.5949       542
+   macro avg     0.3753    0.4008    0.3848       542
+weighted avg     0.5784    0.6070    0.5909       542
+
+Epoch 11/20, Training Loss: 0.1666
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.6857    0.7742    0.7273        31
+     DECIMAL     0.4400    0.3929    0.4151        28
+      ENTITY     0.6096    0.5646    0.5862       271
+         INT     0.2727    0.2727    0.2727        33
+     VARCHAR     0.6131    0.6932    0.6507       176
+
+   micro avg     0.5875    0.5886    0.5880       542
+   macro avg     0.3744    0.3854    0.3789       542
+weighted avg     0.5824    0.5886    0.5840       542
+
+Epoch 12/20, Training Loss: 0.1406
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.6667    0.7097    0.6875        31
+     DECIMAL     0.4412    0.5357    0.4839        28
+      ENTITY     0.6046    0.6827    0.6412       271
+         INT     0.4091    0.2727    0.3273        33
+     VARCHAR     0.6244    0.6989    0.6595       176
+
+   micro avg     0.5980    0.6531    0.6243       542
+   macro avg     0.3923    0.4142    0.3999       542
+weighted avg     0.5909    0.6531    0.6190       542
+
+Epoch 13/20, Training Loss: 0.1247
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.6667    0.7097    0.6875        31
+     DECIMAL     0.4545    0.5357    0.4918        28
+      ENTITY     0.5841    0.6790    0.6280       271
+         INT     0.2558    0.3333    0.2895        33
+     VARCHAR     0.6268    0.7443    0.6805       176
+
+   micro avg     0.5735    0.6697    0.6179       542
+   macro avg     0.3697    0.4289    0.3968       542
+weighted avg     0.5728    0.6697    0.6173       542
+
+Epoch 14/20, Training Loss: 0.1040
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     0.0000    0.0000    0.0000         2
+        DATE     0.7097    0.7097    0.7097        31
+     DECIMAL     0.5152    0.6071    0.5574        28
+      ENTITY     0.5820    0.6937    0.6330       271
+         INT     0.2857    0.3030    0.2941        33
+     VARCHAR     0.5971    0.6989    0.6440       176
+
+   micro avg     0.5723    0.6642    0.6149       542
+   macro avg     0.3842    0.4303    0.4054       542
+weighted avg     0.5695    0.6642    0.6129       542
+
+Epoch 15/20, Training Loss: 0.0930
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     1.0000    0.5000    0.6667         2
+        DATE     0.6970    0.7419    0.7188        31
+     DECIMAL     0.5152    0.6071    0.5574        28
+      ENTITY     0.5892    0.6827    0.6325       271
+         INT     0.3333    0.3030    0.3175        33
+     VARCHAR     0.6364    0.7159    0.6738       176
+
+   micro avg     0.5944    0.6679    0.6290       542
+   macro avg     0.5387    0.5072    0.5095       542
+weighted avg     0.5917    0.6679    0.6267       542
+
+Epoch 16/20, Training Loss: 0.0839
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     1.0000    0.5000    0.6667         2
+        DATE     0.7000    0.6774    0.6885        31
+     DECIMAL     0.4865    0.6429    0.5538        28
+      ENTITY     0.6154    0.6790    0.6456       271
+         INT     0.3023    0.3939    0.3421        33
+     VARCHAR     0.6614    0.7102    0.6849       176
+
+   micro avg     0.6043    0.6679    0.6345       542
+   macro avg     0.5379    0.5148    0.5117       542
+weighted avg     0.6097    0.6679    0.6365       542
+
+Epoch 17/20, Training Loss: 0.0737
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     1.0000    0.5000    0.6667         2
+        DATE     0.7097    0.7097    0.7097        31
+     DECIMAL     0.5000    0.5714    0.5333        28
+      ENTITY     0.5862    0.7528    0.6591       271
+         INT     0.3243    0.3636    0.3429        33
+     VARCHAR     0.6169    0.7045    0.6578       176
+
+   micro avg     0.5831    0.6993    0.6359       542
+   macro avg     0.5339    0.5146    0.5099       542
+weighted avg     0.5833    0.6993    0.6347       542
+
+Epoch 18/20, Training Loss: 0.0678
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     1.0000    0.5000    0.6667         2
+        DATE     0.7241    0.6774    0.7000        31
+     DECIMAL     0.4857    0.6071    0.5397        28
+      ENTITY     0.5667    0.6273    0.5954       271
+         INT     0.2917    0.4242    0.3457        33
+     VARCHAR     0.6332    0.7159    0.6720       176
+
+   micro avg     0.5703    0.6439    0.6049       542
+   macro avg     0.5288    0.5074    0.5028       542
+weighted avg     0.5769    0.6439    0.6074       542
+
+Epoch 19/20, Training Loss: 0.0596
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     1.0000    0.5000    0.6667         2
+        DATE     0.7419    0.7419    0.7419        31
+     DECIMAL     0.5758    0.6786    0.6230        28
+      ENTITY     0.5845    0.6125    0.5982       271
+         INT     0.3871    0.3636    0.3750        33
+     VARCHAR     0.6020    0.6875    0.6419       176
+
+   micro avg     0.5886    0.6310    0.6091       542
+   macro avg     0.5559    0.5120    0.5210       542
+weighted avg     0.5872    0.6310    0.6075       542
+
+Epoch 20/20, Training Loss: 0.0592
+Validation Metrics:
+              precision    recall  f1-score   support
+
+   ATTRIBUTE     0.0000    0.0000    0.0000         1
+     BOOLEAN     1.0000    0.5000    0.6667         2
+        DATE     0.7097    0.7097    0.7097        31
+     DECIMAL     0.6061    0.7143    0.6557        28
+      ENTITY     0.6066    0.6089    0.6077       271
+         INT     0.3333    0.4242    0.3733        33
+     VARCHAR     0.6350    0.7216    0.6755       176
+
+   micro avg     0.6028    0.6439    0.6227       542
+   macro avg     0.5558    0.5255    0.5270       542
+weighted avg     0.6054    0.6439    0.6229       542

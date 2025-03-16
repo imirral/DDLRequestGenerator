@@ -5,7 +5,7 @@ import torch.nn as nn
 from razdel import tokenize
 from transformers import BertForTokenClassification, BertTokenizerFast
 from torch.utils.data import Dataset, DataLoader
-from data_preprocessor import DataPreprocessor
+from data_preprocessor_without_dt import DataPreprocessor
 from sklearn.model_selection import train_test_split
 from seqeval.metrics import classification_report as seq_classification_report
 
@@ -98,9 +98,9 @@ class EntityDataset(Dataset):
         return aligned_labels
 
 
-class EntityExtractionModel(nn.Module):
+class EntityModel(nn.Module):
     def __init__(self, num_labels):
-        super(EntityExtractionModel, self).__init__()
+        super(EntityModel, self).__init__()
         self.model = BertForTokenClassification.from_pretrained(
             "DeepPavlov/rubert-base-cased", num_labels=num_labels)
         self.model.config.id2label = {id: label for label, id in enumerate(self.model.config.id2label)}
@@ -115,7 +115,7 @@ class EntityExtractionModel(nn.Module):
         return outputs.loss, outputs.logits
 
 
-def train_entity_extraction_model(model, train_dataloader, val_dataloader, num_epochs, device, label_map):
+def train_entity_model(model, train_dataloader, val_dataloader, num_epochs, device, label_map):
     optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5)
     model.to(device)
 
@@ -183,7 +183,7 @@ def save_model_and_tokenizer(model, tokenizer, output_dir, label_map):
 def load_model_and_tokenizer(output_dir, num_labels):
     tokenizer = BertTokenizerFast.from_pretrained(output_dir)
     loaded_model = BertForTokenClassification.from_pretrained(output_dir, num_labels=num_labels)
-    model = EntityExtractionModel(num_labels=num_labels)
+    model = EntityModel(num_labels=num_labels)
     model.model = loaded_model
     with open(f'{output_dir}/label_map.json', 'r') as f:
         label_map = json.load(f)
@@ -262,28 +262,28 @@ if __name__ == '__main__':
     # Обучение модели
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     label_map = train_dataset.label_map
-    model = EntityExtractionModel(num_labels=len(label_map))
-    train_entity_extraction_model(model, train_dataloader, val_dataloader, num_epochs=20, device=device,
-                                  label_map=label_map)
+    model = EntityModel(num_labels=len(label_map))
+    train_entity_model(model, train_dataloader, val_dataloader, num_epochs=20, device=device,
+                       label_map=label_map)
 
     # Сохранение модели и токенизатора
     output_dir = 'D:/Magistracy/FQW/DDLRequestGenerator/saved_models/entity_model_without_dt'
     save_model_and_tokenizer(model, tokenizer, output_dir, label_map)
 
-    # Пример использования модели для предсказания
-    test_text = ("Каждое производственное предприятие состоит из одного или нескольких цехов, в каждом из которых "
-                 "размещается одно или несколько производственных линий, специализирующихся на выпуске определенной "
-                 "группы продукции. Каждая производственная линия имеет некоторое количество рабочих станций с "
-                 "определенным числом единиц оборудования. Предприятия обслуживаются инженерно-техническим персоналом "
-                 "(технологи, инженеры по качеству, механики и пр.) и производственным персоналом (операторы, "
-                 "наладчики, упаковщики и пр.).")
-    loaded_model, loaded_tokenizer, loaded_label_map = load_model_and_tokenizer(output_dir, num_labels=len(label_map))
-
-    predicted_entities = predict(test_text,
-                                 loaded_model,
-                                 loaded_tokenizer,
-                                 loaded_label_map,
-                                 device)
-
-    print("Predicted Entities:")
-    print(predicted_entities)
+    # # Пример использования модели для предсказания
+    # test_text = ("Каждое производственное предприятие состоит из одного или нескольких цехов, в каждом из которых "
+    #              "размещается одно или несколько производственных линий, специализирующихся на выпуске определенной "
+    #              "группы продукции. Каждая производственная линия имеет некоторое количество рабочих станций с "
+    #              "определенным числом единиц оборудования. Предприятия обслуживаются инженерно-техническим персоналом "
+    #              "(технологи, инженеры по качеству, механики и пр.) и производственным персоналом (операторы, "
+    #              "наладчики, упаковщики и пр.).")
+    # loaded_model, loaded_tokenizer, loaded_label_map = load_model_and_tokenizer(output_dir, num_labels=len(label_map))
+    #
+    # predicted_entities = predict(test_text,
+    #                              loaded_model,
+    #                              loaded_tokenizer,
+    #                              loaded_label_map,
+    #                              device)
+    #
+    # print("Predicted Entities:")
+    # print(predicted_entities)
