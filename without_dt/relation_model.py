@@ -1,11 +1,13 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import json
 import torch
 import torch.nn as nn
 
 from transformers import BertModel, BertTokenizerFast
 from torch.utils.data import Dataset, DataLoader
-from data_preprocessor_without_dt import DataPreprocessor
+from without_dt.preprocessing import preprocess_data
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
@@ -296,45 +298,35 @@ def get_entity_positions(offset_mapping, entity1_span, entity2_span):
 
 
 if __name__ == '__main__':
-    # Подготовка данных для извлечения отношений
-    preprocessor = DataPreprocessor()
-    preprocessed_data = preprocessor.preprocessed_data
+    preprocessed_data = preprocess_data()
     relation_data = prepare_data_for_relation_extraction(preprocessed_data)
 
-    # Разделение данных на тренировочный и валидационный наборы
     train_data, val_data = train_test_split(relation_data, test_size=0.2, random_state=42)
 
-    # Подготовка токенизатора
     tokenizer = BertTokenizerFast.from_pretrained("DeepPavlov/rubert-base-cased")
 
-    # Создание датасетов и даталоудеров
     train_dataset = RelationDataset(train_data, tokenizer)
     val_dataset = RelationDataset(val_data, tokenizer)
 
     train_dataloader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
     val_dataloader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4)
 
-    # Инициализация модели
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     relation_map = train_dataset.relation_map
     num_labels = len(relation_map)
     model = RelationModel(num_labels=num_labels, freeze_bert_layers=False)
 
-    # Обучение модели
     train_relation_model(model, train_dataloader, val_dataloader, num_epochs=10, device=device, relation_map=relation_map)
 
-    # Сохранение модели и токенизатора
     output_dir = 'D:/Magistracy/FQW/DDLRequestGenerator/saved_models/relation_model_without_dt'
     save_model_and_tokenizer(model, tokenizer, output_dir, relation_map)
 
-    # # Пример использования модели для предсказания
-    # loaded_model, loaded_tokenizer, loaded_relation_map = load_model_and_tokenizer(output_dir, num_labels=num_labels)
-    #
+    loaded_model, loaded_tokenizer, loaded_relation_map = load_model_and_tokenizer(output_dir, num_labels=num_labels)
+
     # example_text = "Библиотека имеет множество книг, которые написаны разными авторами."
     # entity1_text = "Библиотека"
     # entity2_text = "книг"
     #
-    # # Находим позиции сущностей в тексте
     # entity1_start = example_text.find(entity1_text)
     # entity1_end = entity1_start + len(entity1_text)
     # entity2_start = example_text.find(entity2_text)

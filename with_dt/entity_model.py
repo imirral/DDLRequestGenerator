@@ -1,14 +1,13 @@
-import re
 import json
 import torch
-import networkx as nx
 
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 from transformers import BertTokenizerFast, BertForTokenClassification
 from sklearn.model_selection import train_test_split
 from seqeval.metrics import classification_report as seq_classification_report
-from razdel import sentenize
+
+from with_dt.builder_dt import *
 
 
 class Token:
@@ -17,58 +16,6 @@ class Token:
         self.text = text
         self.start = start
         self.stop = stop
-
-
-def segment_text_into_edus(text):
-    sentences = list(sentenize(text))
-
-    edus = []
-    edu_id = 0
-
-    for sent in sentences:
-        sent_text = text[sent.start:sent.stop].strip()
-        if not sent_text:
-            continue
-
-        chunks = re.split(r'(,|—|:)', sent_text)
-        for chunk in chunks:
-            c = chunk.strip()
-            if c and c not in [',', '—', ':']:
-                edus.append((edu_id, c))
-                edu_id += 1
-
-    return edus
-
-
-def detect_relations(edus):
-    markers_map = {
-        'однако': 'Contrast',
-        'потому что': 'Cause',
-        'например': 'Elaboration',
-        'то есть': 'Explanation'
-    }
-    relations = []
-    for i in range(len(edus) - 1):
-        edu_id1, text1 = edus[i]
-        edu_id2, text2 = edus[i + 1]
-        for marker, r_type in markers_map.items():
-            if marker in text1.lower() or marker in text2.lower():
-                relations.append((edu_id1, edu_id2, r_type))
-    return relations
-
-
-def build_discourse_tree(text):
-    edus = segment_text_into_edus(text)
-    rels = detect_relations(edus)
-    G = nx.DiGraph()
-
-    for edu_id, edu_text in edus:
-        G.add_node(edu_id, text=edu_text)
-
-    for r in rels:
-        edu1, edu2, relation_type = r
-        G.add_edge(edu1, edu2, relation=relation_type)
-    return G
 
 
 def tokenize(text):
@@ -408,7 +355,7 @@ if __name__ == '__main__':
         model,
         train_dataloader,
         val_dataloader,
-        num_epochs=30,
+        num_epochs=20,
         device=device,
         label_map=label_map
     )

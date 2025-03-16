@@ -1,3 +1,6 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import json
 import torch
 import torch.nn as nn
@@ -5,9 +8,10 @@ import torch.nn as nn
 from razdel import tokenize
 from transformers import BertForTokenClassification, BertTokenizerFast
 from torch.utils.data import Dataset, DataLoader
-from data_preprocessor_without_dt import DataPreprocessor
+from without_dt.preprocessing import preprocess_data
 from sklearn.model_selection import train_test_split
 from seqeval.metrics import classification_report as seq_classification_report
+from without_dt.postprocessing import postprocess_entities
 
 
 def prepare_data_for_entity_extraction(preprocessed_data):
@@ -240,43 +244,36 @@ def predict(text, model, tokenizer, label_map, device):
 
 
 if __name__ == '__main__':
-    # Подготовка данных для извлечения сущностей
-    preprocessor = DataPreprocessor()
-    preprocessed_data = preprocessor.preprocessed_data
+    preprocessed_data = preprocess_data()
     entity_data = prepare_data_for_entity_extraction(preprocessed_data)
 
-    # Разделение данных на тренировочный и валидационный наборы
     train_data, val_data = train_test_split(entity_data, test_size=0.2, random_state=42)
 
-    # Подготовка данных для обучения
     tokenizer = BertTokenizerFast.from_pretrained("DeepPavlov/rubert-base-cased")
 
-    # Тренировочный датасет и даталоадер
     train_dataset = EntityDataset(train_data, tokenizer)
     train_dataloader = DataLoader(train_dataset, batch_size=8, shuffle=True, num_workers=0)
 
-    # Валидационный датасет и даталоадер
     val_dataset = EntityDataset(val_data, tokenizer)
     val_dataloader = DataLoader(val_dataset, batch_size=8, shuffle=False, num_workers=0)
 
-    # Обучение модели
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     label_map = train_dataset.label_map
     model = EntityModel(num_labels=len(label_map))
     train_entity_model(model, train_dataloader, val_dataloader, num_epochs=20, device=device,
                        label_map=label_map)
 
-    # Сохранение модели и токенизатора
     output_dir = 'D:/Magistracy/FQW/DDLRequestGenerator/saved_models/entity_model_without_dt'
     save_model_and_tokenizer(model, tokenizer, output_dir, label_map)
 
-    # # Пример использования модели для предсказания
-    # test_text = ("Каждое производственное предприятие состоит из одного или нескольких цехов, в каждом из которых "
-    #              "размещается одно или несколько производственных линий, специализирующихся на выпуске определенной "
-    #              "группы продукции. Каждая производственная линия имеет некоторое количество рабочих станций с "
-    #              "определенным числом единиц оборудования. Предприятия обслуживаются инженерно-техническим персоналом "
-    #              "(технологи, инженеры по качеству, механики и пр.) и производственным персоналом (операторы, "
-    #              "наладчики, упаковщики и пр.).")
+    # test_text = ("""
+    #     Пациент заключает договор на лечение в заданном отделении больницы. У каждого пациента есть лечащий врач.
+    #     Пациент может оплачивать свой договор за счёт страховой компании. Обследование пациента проводит не только лечащий врач.
+    #     О пациенте должна содержаться следующая информация: фамилия пациента, его категория, номер паспорта, номер страхового полиса, дата поступления, гражданство.
+    #     О враче должна содержаться следующая информация: фамилия врача, категория, специальность, оклад, контактный телефон.
+    #     Об обследовании должна содержаться следующая информация: название обследования, вид обследования, дата проведения обследования, стоимость обследования.
+    #     О страховой компании должна содержаться следующая информация: название страховой компании, номер лицензии, фамилия руководителя, контактный телефон.""")
+    #
     # loaded_model, loaded_tokenizer, loaded_label_map = load_model_and_tokenizer(output_dir, num_labels=len(label_map))
     #
     # predicted_entities = predict(test_text,
@@ -287,3 +284,8 @@ if __name__ == '__main__':
     #
     # print("Predicted Entities:")
     # print(predicted_entities)
+    #
+    # processed_entities = postprocess_entities(predicted_entities)
+    #
+    # print("Processed Entities:")
+    # print(processed_entities)
