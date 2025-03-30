@@ -1,0 +1,94 @@
+CREATE TABLE пациенты (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    категория VARCHAR(255),
+    номер_паспорт VARCHAR(255),
+    номер_страховой_полис VARCHAR(255),
+    гражданство VARCHAR(255),
+    фамилия VARCHAR(255),
+    дата_поступление DATE
+);
+
+CREATE TABLE договоры (
+    id INT PRIMARY KEY AUTO_INCREMENT
+);
+
+CREATE TABLE врачи (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    специальность VARCHAR(255),
+    оклад VARCHAR(255),
+    фамилия VARCHAR(255),
+    телефон VARCHAR(255),
+    категория VARCHAR(255)
+);
+
+CREATE TABLE страховые_компании (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    номер_лицензия VARCHAR(255),
+    фамилия_руководитель VARCHAR(255),
+    название VARCHAR(255),
+    телефон VARCHAR(255)
+);
+
+CREATE TABLE обследования_пациенты (
+    id INT PRIMARY KEY AUTO_INCREMENT
+);
+
+CREATE TABLE обследования (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    дата_проведение DATE,
+    вид VARCHAR(255),
+    стоимость VARCHAR(255),
+    название VARCHAR(255)
+);
+
+ALTER TABLE договоры ADD COLUMN пациенты_id INT;
+ALTER TABLE договоры ADD FOREIGN KEY (пациенты_id) REFERENCES пациенты(id);
+
+ALTER TABLE обследования ADD COLUMN пациенты_id INT;
+ALTER TABLE обследования ADD FOREIGN KEY (пациенты_id) REFERENCES пациенты(id);
+
+ALTER TABLE обследования_пациенты ADD COLUMN пациенты_id INT;
+ALTER TABLE обследования_пациенты ADD FOREIGN KEY (пациенты_id) REFERENCES пациенты(id);
+
+ALTER TABLE обследования_пациенты ADD COLUMN договоры_id INT;
+ALTER TABLE обследования_пациенты ADD FOREIGN KEY (договоры_id) REFERENCES договоры(id);
+
+ALTER TABLE пациенты ADD COLUMN договоры_id INT;
+ALTER TABLE пациенты ADD FOREIGN KEY (договоры_id) REFERENCES договоры(id);
+
+ALTER TABLE обследования ADD COLUMN договоры_id INT;
+ALTER TABLE обследования ADD FOREIGN KEY (договоры_id) REFERENCES договоры(id);
+
+ALTER TABLE обследования ADD COLUMN врачи_id INT;
+ALTER TABLE обследования ADD FOREIGN KEY (врачи_id) REFERENCES врачи(id);
+
+ALTER TABLE обследования_пациенты ADD COLUMN врачи_id INT;
+ALTER TABLE обследования_пациенты ADD FOREIGN KEY (врачи_id) REFERENCES врачи(id);
+
+ALTER TABLE пациенты ADD COLUMN врачи_id INT;
+ALTER TABLE пациенты ADD FOREIGN KEY (врачи_id) REFERENCES врачи(id);
+
+ALTER TABLE договоры ADD COLUMN врачи_id INT;
+ALTER TABLE договоры ADD FOREIGN KEY (врачи_id) REFERENCES врачи(id);
+
+ALTER TABLE страховые_компании ADD COLUMN врачи_id INT;
+ALTER TABLE страховые_компании ADD FOREIGN KEY (врачи_id) REFERENCES врачи(id);
+
+ALTER TABLE обследования ADD COLUMN страховые_компании_id INT;
+ALTER TABLE обследования ADD FOREIGN KEY (страховые_компании_id) REFERENCES страховые_компании(id);
+
+ALTER TABLE обследования_пациенты ADD COLUMN страховые_компании_id INT;
+ALTER TABLE обследования_пациенты ADD FOREIGN KEY (страховые_компании_id) REFERENCES страховые_компании(id);
+
+ALTER TABLE врачи ADD COLUMN страховые_компании_id INT;
+ALTER TABLE врачи ADD FOREIGN KEY (страховые_компании_id) REFERENCES страховые_компании(id);
+
+ALTER TABLE пациенты ADD COLUMN страховые_компании_id INT;
+ALTER TABLE пациенты ADD FOREIGN KEY (страховые_компании_id) REFERENCES страховые_компании(id);
+
+ALTER TABLE обследования ADD COLUMN обследования_пациенты_id INT;
+ALTER TABLE обследования ADD FOREIGN KEY (обследования_пациенты_id) REFERENCES обследования_пациенты(id);
+
+ALTER TABLE пациенты ADD COLUMN обследования_пациенты_id INT;
+ALTER TABLE пациенты ADD FOREIGN KEY (обследования_пациенты_id) REFERENCES обследования_пациенты(id);
+

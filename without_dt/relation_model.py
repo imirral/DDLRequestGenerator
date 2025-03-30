@@ -321,8 +321,8 @@ if __name__ == '__main__':
     output_dir = 'D:/Magistracy/FQW/DDLRequestGenerator/saved_models/relation_model_without_dt'
     save_model_and_tokenizer(model, tokenizer, output_dir, relation_map)
 
-    loaded_model, loaded_tokenizer, loaded_relation_map = load_model_and_tokenizer(output_dir, num_labels=num_labels)
-
+    # loaded_model, loaded_tokenizer, loaded_relation_map = load_model_and_tokenizer(output_dir, num_labels=num_labels)
+    #
     # example_text = "Библиотека имеет множество книг, которые написаны разными авторами."
     # entity1_text = "Библиотека"
     # entity2_text = "книг"
