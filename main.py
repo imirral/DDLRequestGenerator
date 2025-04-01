@@ -32,10 +32,19 @@ def get_sentence_index(span, sentence_spans):
     return -1
 
 
-def are_in_same_sentence(entity_span, attribute_span, sentence_spans):
-    ent_sent_id = get_sentence_index(entity_span, sentence_spans)
-    attr_sent_id = get_sentence_index(attribute_span, sentence_spans)
-    return ent_sent_id != -1 and attr_sent_id != -1 and ent_sent_id == attr_sent_id
+def are_in_same_sentence(span1, span2, sentence_spans):
+    s1 = get_sentence_index(span1, sentence_spans)
+    s2 = get_sentence_index(span2, sentence_spans)
+    return s1 != -1 and s2 != -1 and s1 == s2
+
+
+def get_common_sentence_index(span1, span2, sentence_spans):
+    s1 = get_sentence_index(span1, sentence_spans)
+    s2 = get_sentence_index(span2, sentence_spans)
+    if s1 != -1 and s1 == s2:
+        return s1
+    else:
+        return None
 
 
 def separate_entities_and_attributes(predicted_entities):
@@ -81,6 +90,10 @@ def analyze_text(text, entity_model, entity_tokenizer, entity_label_map,
             ent1 = entities[i]
             ent2 = entities[j]
 
+            common_sentence_id = get_common_sentence_index(ent1, ent2, sentence_spans)
+            if common_sentence_id is None:
+                continue
+
             predicted_rel = predict_relation(
                 relation_model,
                 relation_tokenizer,
@@ -92,7 +105,7 @@ def analyze_text(text, entity_model, entity_tokenizer, entity_label_map,
             )
 
             if predicted_rel != 'unknown':
-                key = (ent1['text'].lower(), ent2['text'].lower(), predicted_rel)
+                key = (common_sentence_id, ent1['text'].lower(), ent2['text'].lower(), predicted_rel)
                 relation_set.add(key)
 
     for ent in entities:
@@ -108,11 +121,12 @@ def analyze_text(text, entity_model, entity_tokenizer, entity_label_map,
                     relation_label_map
                 )
                 if predicted_rel == 'has_attribute':
-                    key = (ent['text'].lower(), attr['text'].lower(), 'has_attribute')
+                    sent_id = get_sentence_index(ent, sentence_spans)
+                    key = (sent_id, ent['text'].lower(), attr['text'].lower(), 'has_attribute')
                     relation_set.add(key)
 
     relations = []
-    for (e1, e2, rtype) in relation_set:
+    for (_sent_id, e1, e2, rtype) in relation_set:
         relations.append({
             'entity1': e1,
             'entity2': e2,
