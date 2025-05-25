@@ -1,46 +1,27 @@
-CREATE TABLE пациенты (
+CREATE TABLE владельцы (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    номер_страховой_полис VARCHAR(255),
-    категория VARCHAR(255),
-    гражданство VARCHAR(255),
     фамилия VARCHAR(255),
-    номер_паспорт VARCHAR(255),
-    дата_поступление DATE
+    имя VARCHAR(255),
+    отчество VARCHAR(255),
+    адрес VARCHAR(255),
+    телефон VARCHAR(255)
 );
 
-CREATE TABLE договоры (
+CREATE TABLE зарядные_станции (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    количество_зарядный_порт INT,
+    максимальная_мощность_зарядка VARCHAR(255),
+    тип_разъём VARCHAR(255)
+);
+
+CREATE TABLE клиенты (
     id INT PRIMARY KEY AUTO_INCREMENT
 );
 
-CREATE TABLE врачи (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    специальность VARCHAR(255),
-    категория VARCHAR(255),
-    фамилия VARCHAR(255),
-    телефон VARCHAR(255),
-    оклад VARCHAR(255)
-);
-
-CREATE TABLE страховые_компании (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    номер_лицензия VARCHAR(255),
-    телефон VARCHAR(255),
-    название VARCHAR(255),
-    фамилия_руководитель VARCHAR(255)
-);
-
-CREATE TABLE обследования_пациенты (
+CREATE TABLE станции (
     id INT PRIMARY KEY AUTO_INCREMENT
 );
 
-CREATE TABLE обследования (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    стоимость VARCHAR(255),
-    вид VARCHAR(255),
-    название VARCHAR(255),
-    дата_проведение DATE
-);
-
-ALTER TABLE договоры ADD COLUMN пациенты_id INT;
-ALTER TABLE договоры ADD FOREIGN KEY (пациенты_id) REFERENCES пациенты(id);
+ALTER TABLE станции ADD COLUMN клиенты_id INT;
+ALTER TABLE станции ADD FOREIGN KEY (клиенты_id) REFERENCES клиенты(id);
 

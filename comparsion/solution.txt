@@ -1,66 +1,139 @@
-CREATE TABLE СтраховыеКомпании (
-    id_компании INT PRIMARY KEY AUTO_INCREMENT,
-    название_компании VARCHAR(100) NOT NULL,
-    номер_лицензии VARCHAR(50) NOT NULL UNIQUE,
-    фамилия_руководителя VARCHAR(50) NOT NULL,
-    телефон VARCHAR(20) NOT NULL
+CREATE TABLE зоны (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название VARCHAR(255) NOT NULL,
+	описание TEXT
 );
 
-CREATE TABLE Врачи (
-    id_врача INT PRIMARY KEY AUTO_INCREMENT,
-    фамилия VARCHAR(50) NOT NULL,
-    категория VARCHAR(30) NOT NULL,
-    специальность VARCHAR(50) NOT NULL,
-    оклад DECIMAL(10, 2) NOT NULL,
-    телефон VARCHAR(20) NOT NULL
+CREATE TABLE комнаты (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название VARCHAR(255) NOT NULL,
+	зона_id INT NOT NULL,
+	площадь DECIMAL(10,2),
+	описание TEXT,
+	FOREIGN KEY (зона_id) REFERENCES зоны(id)
 );
 
-CREATE TABLE Отделения (
-    id_отделения INT PRIMARY KEY AUTO_INCREMENT,
-    название_отделения VARCHAR(100) NOT NULL,
-    описание TEXT
+CREATE TABLE категории_устройств (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название VARCHAR(255) NOT NULL,
+	описание TEXT
 );
 
-CREATE TABLE Пациенты (
-    id_пациента INT PRIMARY KEY AUTO_INCREMENT,
-    фамилия VARCHAR(50) NOT NULL,
-    категория VARCHAR(30) NOT NULL,
-    номер_паспорта VARCHAR(20) NOT NULL UNIQUE,
-    номер_страхового_полиса VARCHAR(20),
-    дата_поступления DATE NOT NULL,
-    гражданство VARCHAR(50) NOT NULL,
-    id_лечащего_врача INT NOT NULL,
-    FOREIGN KEY (id_лечащего_врача) REFERENCES Врачи(id_врача)
+CREATE TABLE виды_устройств (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название VARCHAR(255) NOT NULL,
+	категория_id INT NOT NULL,
+	специфические_атрибуты JSON,
+	FOREIGN KEY (категория_id) REFERENCES категории_устройств(id)
 );
 
-CREATE TABLE ДоговорыНаЛечение (
-    id_договора INT PRIMARY KEY AUTO_INCREMENT,
-    id_пациента INT NOT NULL,
-    id_отделения INT NOT NULL,
-    дата_начала DATE NOT NULL,
-    дата_окончания DATE,
-    id_страховой_компании INT,
-    FOREIGN KEY (id_пациента) REFERENCES Пациенты(id_пациента),
-    FOREIGN KEY (id_отделения) REFERENCES Отделения(id_отделения),
-    FOREIGN KEY (id_страховой_компании) REFERENCES СтраховыеКомпании(id_компании)
+CREATE TABLE устройства (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название VARCHAR(255) NOT NULL,
+	вид_id INT NOT NULL,
+	комната_id INT,
+	статус VARCHAR(50),
+	мощность DECIMAL(10,2),
+	дата_установки DATE,
+	серийный_номер VARCHAR(255),
+	is_контроллер BOOLEAN DEFAULT FALSE,
+	is_хаб BOOLEAN DEFAULT FALSE,
+	is_центральный_блок BOOLEAN DEFAULT FALSE,
+	FOREIGN KEY (вид_id) REFERENCES виды_устройств(id),
+	FOREIGN KEY (комната_id) REFERENCES комнаты(id)
 );
 
-CREATE TABLE ВидыОбследований (
-    id_вида_обследования INT PRIMARY KEY AUTO_INCREMENT,
-    название_обследования VARCHAR(100) NOT NULL,
-    вид_обследования VARCHAR(50) NOT NULL,
-    стандартная_стоимость DECIMAL(10, 2) NOT NULL
+CREATE TABLE группы_устройств (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название VARCHAR(255) NOT NULL,
+	описание TEXT,
+	контроллер_id INT,
+	хаб_id INT,
+	FOREIGN KEY (контроллер_id) REFERENCES устройства(id),
+	FOREIGN KEY (хаб_id) REFERENCES устройства(id)
 );
 
-CREATE TABLE Обследования (
-    id_обследования INT PRIMARY KEY AUTO_INCREMENT,
-    id_пациента INT NOT NULL,
-    id_врача INT NOT NULL,
-    id_вида_обследования INT NOT NULL,
-    дата_проведения DATE NOT NULL,
-    фактическая_стоимость DECIMAL(10, 2) NOT NULL,
-    примечания TEXT,
-    FOREIGN KEY (id_пациента) REFERENCES Пациенты(id_пациента),
-    FOREIGN KEY (id_врача) REFERENCES Врачи(id_врача),
-    FOREIGN KEY (id_вида_обследования) REFERENCES ВидыОбследований(id_вида_обследования)
+CREATE TABLE состав_группы (
+	группа_id INT NOT NULL,
+	устройство_id INT NOT NULL,
+	PRIMARY KEY (группа_id, устройство_id),
+	FOREIGN KEY (группа_id) REFERENCES группы_устройств(id),
+	FOREIGN KEY (устройство_id) REFERENCES устройства(id)
+);
+
+CREATE TABLE виртуальные_лаборатории (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название VARCHAR(255) NOT NULL,
+	описание TEXT,
+	версия_ПО VARCHAR(50)
+);
+
+CREATE TABLE зоны_лаборатории (
+	зона_id INT NOT NULL,
+	лаборатория_id INT NOT NULL,
+	PRIMARY KEY (зона_id, лаборатория_id),
+	FOREIGN KEY (зона_id) REFERENCES зоны(id),
+	FOREIGN KEY (лаборатория_id) REFERENCES виртуальные_лаборатории(id)
+);
+
+CREATE TABLE тестирования_устройств (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	устройство_id INT NOT NULL,
+	лаборатория_id INT NOT NULL,
+	дата_тестирования DATETIME NOT NULL,
+	результат BOOLEAN,
+	отчет TEXT,
+	FOREIGN KEY (устройство_id) REFERENCES устройства(id),
+	FOREIGN KEY (лаборатория_id) REFERENCES виртуальные_лаборатории(id)
+);
+
+CREATE TABLE категории_пользователей (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название VARCHAR(255) NOT NULL,
+	уровень_доступа INT NOT NULL,
+	описание TEXT
+);
+
+CREATE TABLE пользователи (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	фио VARCHAR(255) NOT NULL,
+	логин VARCHAR(50) UNIQUE NOT NULL,
+	хэш_пароля VARCHAR(255) NOT NULL,
+	категория_id INT NOT NULL,
+	контактный_номер VARCHAR(20),
+	дата_регистрации DATE NOT NULL,
+	pin_код VARCHAR(10),
+	биометрические_данные TEXT,
+	FOREIGN KEY (категория_id) REFERENCES категории_пользователей(id)
+);
+
+CREATE TABLE журнал_состояний (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	устройство_id INT NOT NULL,
+	время_изменения DATETIME NOT NULL,
+	состояние JSON NOT NULL,
+	FOREIGN KEY (устройство_id) REFERENCES устройства(id)
+);
+
+CREATE TABLE потребление_ресурсов (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	устройство_id INT,
+	тип_ресурса ENUM('электричество', 'вода', 'газ') NOT NULL,
+	количество DECIMAL(10,2) NOT NULL,
+	единица_измерения VARCHAR(20) NOT NULL,
+	период_начала DATETIME NOT NULL,
+	период_окончания DATETIME NOT NULL,
+	FOREIGN KEY (устройство_id) REFERENCES устройства(id)
+);
+
+CREATE TABLE управление_устройствами (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	устройство_id INT NOT NULL,
+	пользователь_id INT,
+	команда VARCHAR(255) NOT NULL,
+	параметры JSON,
+	время_команды DATETIME NOT NULL,
+	статус_выполнения VARCHAR(50),
+	FOREIGN KEY (устройство_id) REFERENCES устройства(id),
+	FOREIGN KEY (пользователь_id) REFERENCES пользователи(id)
 );

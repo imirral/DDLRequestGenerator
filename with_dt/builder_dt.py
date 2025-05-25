@@ -32,25 +32,31 @@ def detect_relations(edus):
         'например': 'Elaboration',
         'то есть': 'Explanation'
     }
+
     relations = []
+
     for i in range(len(edus) - 1):
         edu_id1, text1 = edus[i]
         edu_id2, text2 = edus[i + 1]
+
         for marker, r_type in markers_map.items():
             if marker in text1.lower() or marker in text2.lower():
                 relations.append((edu_id1, edu_id2, r_type))
+
     return relations
 
 
 def build_discourse_tree(text):
     edus = segment_text_into_edus(text)
     rels = detect_relations(edus)
-    G = nx.DiGraph()
+
+    graph = nx.DiGraph()
 
     for edu_id, edu_text in edus:
-        G.add_node(edu_id, text=edu_text)
+        graph.add_node(edu_id, text=edu_text)
 
     for r in rels:
         edu1, edu2, relation_type = r
-        G.add_edge(edu1, edu2, relation=relation_type)
-    return G
+        graph.add_edge(edu1, edu2, relation=relation_type)
+
+    return graph

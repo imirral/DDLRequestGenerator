@@ -251,7 +251,7 @@ def load_model_and_tokenizer(output_dir, num_labels):
     return model, tokenizer, relation_map
 
 
-def predict(model, tokenizer, text, entity1_span, entity2_span, device, relation_map):
+def predict(model, tokenizer, text, entity1_span, entity2_span, device, relation_map, threshold=0.5):
     model.to(device)
     model.eval()
 
@@ -273,11 +273,20 @@ def predict(model, tokenizer, text, entity1_span, entity2_span, device, relation
 
     with torch.no_grad():
         logits = model(input_ids, attention_mask, entity1_mask, entity2_mask)
-        prediction = torch.argmax(logits, dim=1).cpu().item()
+        probs = torch.softmax(logits, dim=1)  # Размер [batch_size, num_labels]
+
+        # Для batch_size=1 извлекаем значения из тензоров
+        max_prob, prediction = torch.max(probs, dim=1)
+        max_prob = max_prob.item()  # Скаляр
+        prediction = prediction.item()  # Индекс класса
 
     id2relation = {v: k for k, v in relation_map.items()}
 
-    return id2relation.get(prediction, 'unknown')
+    # Если самая большая вероятность меньше порога - отказываемся
+    if max_prob < threshold:
+        return 'unknown'
+    else:
+        return id2relation.get(prediction, 'unknown')
 
 
 def get_entity_positions(offset_mapping, entity1_span, entity2_span):

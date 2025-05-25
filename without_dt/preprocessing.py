@@ -5,8 +5,8 @@ def load_jsonl():
     file_path = "D:/Magistracy/FQW/DDLRequestGenerator/data/imirral.jsonl"
     data = []
 
-    with open(file_path, 'r', encoding='utf-8') as f:
-        for line in f:
+    with open(file_path, 'r', encoding='utf-8') as file:
+        for line in file:
             data.append(json.loads(line))
 
     return data
@@ -36,9 +36,9 @@ def preprocess_data():
             id_to_entity[entity_id] = (entity_id, start_offset, end_offset, label)
 
             if label == 'ENTITY':
-                entity_labels.append((entity_id, start_offset, end_offset, 'ENTITY'))
+                entity_labels.append((entity_id, start_offset, end_offset, label))
             elif label == 'ATTRIBUTE':
-                attribute_labels.append((entity_id, start_offset, end_offset, 'ATTRIBUTE'))
+                attribute_labels.append((entity_id, start_offset, end_offset, label))
             elif label in ['VARCHAR', 'INT', 'DATE', 'DECIMAL', 'BOOLEAN']:
                 type_labels.append((entity_id, start_offset, end_offset, label))
 

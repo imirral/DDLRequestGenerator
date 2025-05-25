@@ -11,7 +11,6 @@ from torch.utils.data import Dataset, DataLoader
 from without_dt.preprocessing import preprocess_data
 from sklearn.model_selection import train_test_split
 from seqeval.metrics import classification_report as seq_classification_report
-from without_dt.postprocessing import postprocess_entities
 
 
 def prepare_data_for_entity_extraction(preprocessed_data):
@@ -24,11 +23,17 @@ def prepare_data_for_entity_extraction(preprocessed_data):
 
         word_labels = ['O'] * len(words)
 
+        # Словарь {индекс символа: индекс токена}
+        # К какому слову (токену) относится символ?
         char_to_word = {}
         for idx, token in enumerate(tokens):
             for char_pos in range(token.start, token.stop):
                 char_to_word[char_pos] = idx
 
+        # Присвоение метки каждому токену
+        # B - beginning
+        # I - inside
+        # O - outside
         for entity in item['entities'] + item['attributes'] + item['types']:
             entity_id, start, end, label = entity
 
@@ -52,6 +57,7 @@ def prepare_data_for_entity_extraction(preprocessed_data):
     return prepared_data
 
 
+# Класс-обертка для DataLoader
 class EntityDataset(Dataset):
     def __init__(self, data, tokenizer, max_length=512):
         self.data = data
@@ -76,6 +82,8 @@ class EntityDataset(Dataset):
         item = self.data[idx]
         words = item['words']
         labels = item['labels']
+
+        # Подготовка входных данных для модели BERT
         encoding = self.tokenizer(
             words,
             is_split_into_words=True,
@@ -84,19 +92,22 @@ class EntityDataset(Dataset):
             max_length=self.max_length,
             return_special_tokens_mask=True
         )
+
         labels = self.align_labels(labels, encoding)
+
         return {
             'input_ids': torch.tensor(encoding['input_ids'], dtype=torch.long),
             'attention_mask': torch.tensor(encoding['attention_mask'], dtype=torch.long),
             'labels': torch.tensor(labels, dtype=torch.long)
         }
 
+    # Разметка subword-токенов
     def align_labels(self, labels, encoding):
         aligned_labels = []
         word_ids = encoding.word_ids()
         for word_idx in word_ids:
             if word_idx is None:
-                aligned_labels.append(-100)
+                aligned_labels.append(-100)  # Позиция для игнорирования
             else:
                 aligned_labels.append(self.label_map[labels[word_idx]])
         return aligned_labels
@@ -105,8 +116,12 @@ class EntityDataset(Dataset):
 class EntityModel(nn.Module):
     def __init__(self, num_labels):
         super(EntityModel, self).__init__()
+
+        # num_labels - общее число классов (включая B/I для каждого типа и "O")
+        # Инициализация модели rubert-base-cased
         self.model = BertForTokenClassification.from_pretrained(
             "DeepPavlov/rubert-base-cased", num_labels=num_labels)
+
         self.model.config.id2label = {id: label for label, id in enumerate(self.model.config.id2label)}
         self.model.config.label2id = {label: id for id, label in self.model.config.id2label.items()}
 
@@ -120,7 +135,7 @@ class EntityModel(nn.Module):
 
 
 def train_entity_model(model, train_dataloader, val_dataloader, num_epochs, device, label_map):
-    optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5)  # lr - скорость обучения
     model.to(device)
 
     id2label = {id: label for label, id in label_map.items()}
@@ -207,8 +222,10 @@ def predict(text, model, tokenizer, label_map, device):
     )
     input_ids = encoding['input_ids'].to(device)
     attention_mask = encoding['attention_mask'].to(device)
+
     with torch.no_grad():
         outputs = model.model(input_ids=input_ids, attention_mask=attention_mask)
+
     logits = outputs.logits
     predictions = torch.argmax(logits, dim=-1).cpu().numpy()[0]
     tokens = tokenizer.convert_ids_to_tokens(input_ids[0])

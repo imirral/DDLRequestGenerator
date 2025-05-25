@@ -1,45 +1,120 @@
-CREATE TABLE пациенты (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    номер_страховой_полис VARCHAR(255),
-    категория VARCHAR(255),
-    гражданство VARCHAR(255),
-    фамилия VARCHAR(255),
-    номер_паспорт VARCHAR(255),
-    дата_поступление DATE
+CREATE TABLE зоны (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_зоны VARCHAR(255) NOT NULL,
+	описание VARCHAR(255)
 );
 
-CREATE TABLE договоры (
-    id INT PRIMARY KEY AUTO_INCREMENT
+CREATE TABLE помещения (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_помещения VARCHAR(255) NOT NULL,
+	тип_функции VARCHAR(255)
 );
 
-CREATE TABLE врачи (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    специальность VARCHAR(255),
-    категория VARCHAR(255),
-    фамилия VARCHAR(255),
-    телефон VARCHAR(255),
-    оклад VARCHAR(255)
+CREATE TABLE категории_устройств (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_категории VARCHAR(255) NOT NULL,
+	описание VARCHAR(255)
 );
 
-CREATE TABLE страховые_компании (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    номер_лицензия VARCHAR(255),
-    телефон VARCHAR(255),
-    название VARCHAR(255),
-    фамилия_руководитель VARCHAR(255)
+CREATE TABLE типы_устройств (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_типа VARCHAR(255) NOT NULL,
+	описание VARCHAR(255)
 );
 
-CREATE TABLE обследования_пациенты (
-    id INT PRIMARY KEY AUTO_INCREMENT
+CREATE TABLE устройства (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_устройства VARCHAR(255) NOT NULL,
+	дата_установки DATE,
+	статус VARCHAR(50)
 );
 
-CREATE TABLE обследования (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    стоимость VARCHAR(255),
-    вид VARCHAR(255),
-    название VARCHAR(255),
-    дата_проведение DATE
+CREATE TABLE группы_устройств (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_группы VARCHAR(255) NOT NULL,
+	состав TEXT
 );
 
-ALTER TABLE договоры ADD COLUMN пациенты_id INT;
-ALTER TABLE договоры ADD FOREIGN KEY (пациенты_id) REFERENCES пациенты(id);
+CREATE TABLE контроллеры (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_контроллера VARCHAR(255) NOT NULL,
+	описание VARCHAR(255)
+);
+
+CREATE TABLE хабы (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_хаба VARCHAR(255)
+);
+
+CREATE TABLE центральные_устройства (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_устройства VARCHAR(255),
+	описание VARCHAR(255)
+);
+
+CREATE TABLE роли_пользователей (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_роли VARCHAR(100) NOT NULL,
+	описание VARCHAR(255)
+);
+
+CREATE TABLE пользователи (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	полное_имя VARCHAR(255) NOT NULL,
+	логин VARCHAR(255) NOT NULL,
+	хеш_пароля VARCHAR(255) NOT NULL,
+	контактный_телефон VARCHAR(50),
+	дата_регистрации DATE,
+	уровень_доступа INT,
+	пин_код VARCHAR(50),
+	биометрические_данные VARCHAR(255)
+);
+
+CREATE TABLE виртуальные_лаборатории (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	название_лаборатории VARCHAR(255) NOT NULL,
+	описание VARCHAR(255)
+);
+
+CREATE TABLE зона_виртуальная_лаборатория (
+	id INT PRIMARY KEY AUTO_INCREMENT
+);
+
+ALTER TABLE зоны ADD COLUMN центральное_устройство_id INT;
+ALTER TABLE зоны ADD FOREIGN KEY (центральное_устройство_id) REFERENCES центральные_устройства(id);
+
+ALTER TABLE помещения ADD COLUMN зона_id INT;
+ALTER TABLE помещения ADD FOREIGN KEY (зона_id) REFERENCES зоны(id);
+
+ALTER TABLE типы_устройств ADD COLUMN катеогрия_id INT;
+ALTER TABLE типы_устройств ADD FOREIGN KEY (катеогрия_id) REFERENCES категории_устройств(id);
+
+ALTER TABLE устройства ADD COLUMN тип_устройства_id INT;
+ALTER TABLE устройства ADD FOREIGN KEY (тип_устройства_id) REFERENCES типы_устройств(id);
+
+ALTER TABLE устройства ADD COLUMN помещение_id INT;
+ALTER TABLE устройства ADD FOREIGN KEY (помещение_id) REFERENCES помещения(id);
+
+ALTER TABLE группы_устройств ADD COLUMN главное_устройство_id INT;
+ALTER TABLE группы_устройств ADD FOREIGN KEY (главное_устройство_id) REFERENCES устройства(id);
+
+ALTER TABLE контроллеры ADD COLUMN устройство_id INT;
+ALTER TABLE контроллеры ADD FOREIGN KEY (устройство_id) REFERENCES устройства(id);
+
+ALTER TABLE хабы ADD COLUMN устройство_id INT;
+ALTER TABLE хабы ADD FOREIGN KEY (устройство_id) REFERENCES устройства(id);
+
+ALTER TABLE хабы ADD COLUMN управляемая_группа_id INT;
+ALTER TABLE хабы ADD FOREIGN KEY (управляемая_группа_id) REFERENCES группы_устройств(id);
+
+ALTER TABLE центральные_устройства ADD COLUMN устройство_id INT;
+ALTER TABLE центральные_устройства ADD FOREIGN KEY (устройство_id) REFERENCES устройства(id);
+
+ALTER TABLE пользователи ADD COLUMN роль_id INT;
+ALTER TABLE пользователи ADD FOREIGN KEY (роль_id) REFERENCES роли_пользователей(id);
+
+ALTER TABLE зона_виртуальная_лаборатория ADD COLUMN зона_id INT;
+ALTER TABLE зона_виртуальная_лаборатория ADD FOREIGN KEY (зона_id) REFERENCES зоны(id);
+
+ALTER TABLE зона_виртуальная_лаборатория ADD COLUMN лаборатория_id INT;
+ALTER TABLE зона_виртуальная_лаборатория ADD FOREIGN KEY (лаборатория_id) REFERENCES виртуальные_лаборатории(id);
